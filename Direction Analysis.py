@@ -253,6 +253,10 @@ trade_imbalance = trade_imbalance.iloc[:,[0,2]]
 trade_imbalance = trade_imbalance[trade_imbalance.trade_imbalance != 0]
 trade_imbalance = trade_imbalance.loc['2020-08-01 00:00:00':,:]
 
+quote_imbalance = pd.read_csv('aug_sep_full_data.csv')
+quote_imbalance = quote_imbalance.iloc[:,6:]
+
+
 np.mean(np.asarray(quotes['Mid Prices'].diff(periods=60).dropna()))
 np.std(np.asarray(quotes['Mid Prices'].diff(periods=60).dropna()))
 
@@ -296,9 +300,84 @@ trade_deciles['Price Changes Deciles'] = pd.qcut(trade_deciles['Price Difference
 
 trade_means = trade_deciles.groupby('Decile').mean()
 
-plt.scatter(vol_mid_means['VAMP - Mid'], vol_mid_means['Price Difference'])
-plt.scatter(trade_means['Trade Imbalance'], vol_mid_means['Price Difference'])
-#plt.title('60 Sec Change in Mid price vs Diff Between Mid and Vamp')
-#plt.xlabel('VAMP - Mid Price')
+quote_deciles = pd.qcut(quote_imbalance['order_imbalance5'][:-60], 10,labels = False).dropna()
+quote_deciles = pd.DataFrame(quote_deciles)
+quote_deciles.columns = ['Decile']
+quote_deciles['Order Imbalance'] = quote_imbalance['order_imbalance5'][:-60]
+quote_deciles['Price Difference'] = list(quote_imbalance['mid_price'].diff(periods=60).dropna())
+quote_deciles['Price Changes Deciles'] = pd.qcut(quote_deciles['Price Difference'], 10,labels = False)
+
+
+quote_means = quote_deciles.groupby('Decile').mean()
+
+vol = plt.scatter(list(vol_mid_means.index), vol_mid_means['Price Difference'], marker='o')
+trd = plt.scatter(list(trade_means.index), trade_means['Price Difference'], marker='x')
+quo = plt.scatter(list(quote_means.index), quote_means['Price Difference'], marker='^')
+plt.legend((vol, trd, quo),('VAMP - Mid Price', 'Trade Imbalance', 'Quote Imbalance'))
+plt.title('60 Sec Change in Mid price vs Signals')
+plt.xlabel('Signal')
 plt.ylabel('60 Sec Change in Mid Price')
 plt.show()
+
+quote_deciles1 = pd.qcut(quote_imbalance['order_imbalance1'][:-60], 10,labels = False).dropna()
+quote_deciles1 = pd.DataFrame(quote_deciles1)
+quote_deciles1.columns = ['Decile']
+quote_deciles1['Order Imbalance'] = quote_imbalance['order_imbalance1'][:-60]
+quote_deciles1['Price Difference'] = list(quote_imbalance['mid_price'].diff(periods=60).dropna())
+quote_deciles1['Price Changes Deciles'] = pd.qcut(quote_deciles1['Price Difference'], 10,labels = False)
+
+
+quote_means1 = quote_deciles1.groupby('Decile').mean()
+
+quote_deciles2 = pd.qcut(quote_imbalance['order_imbalance2'][:-60], 10,labels = False).dropna()
+quote_deciles2 = pd.DataFrame(quote_deciles2)
+quote_deciles2.columns = ['Decile']
+quote_deciles2['Order Imbalance'] = quote_imbalance['order_imbalance2'][:-60]
+quote_deciles2['Price Difference'] = list(quote_imbalance['mid_price'].diff(periods=60).dropna())
+quote_deciles2['Price Changes Deciles'] = pd.qcut(quote_deciles2['Price Difference'], 10,labels = False)
+
+
+quote_means2 = quote_deciles2.groupby('Decile').mean()
+
+quote_deciles3 = pd.qcut(quote_imbalance['order_imbalance3'][:-60], 10,labels = False).dropna()
+quote_deciles3 = pd.DataFrame(quote_deciles3)
+quote_deciles3.columns = ['Decile']
+quote_deciles3['Order Imbalance'] = quote_imbalance['order_imbalance3'][:-60]
+quote_deciles3['Price Difference'] = list(quote_imbalance['mid_price'].diff(periods=60).dropna())
+quote_deciles3['Price Changes Deciles'] = pd.qcut(quote_deciles2['Price Difference'], 10,labels = False)
+
+
+quote_means3 = quote_deciles3.groupby('Decile').mean()
+
+quote_deciles4 = pd.qcut(quote_imbalance['order_imbalance4'][:-60], 10,labels = False).dropna()
+quote_deciles4 = pd.DataFrame(quote_deciles4)
+quote_deciles4.columns = ['Decile']
+quote_deciles4['Order Imbalance'] = quote_imbalance['order_imbalance4'][:-60]
+quote_deciles4['Price Difference'] = list(quote_imbalance['mid_price'].diff(periods=60).dropna())
+quote_deciles4['Price Changes Deciles'] = pd.qcut(quote_deciles2['Price Difference'], 10,labels = False)
+
+
+quote_means4 = quote_deciles4.groupby('Decile').mean()
+
+quote_deciles5 = pd.qcut(quote_imbalance['order_imbalance5'][:-60], 10,labels = False).dropna()
+quote_deciles5 = pd.DataFrame(quote_deciles5)
+quote_deciles5.columns = ['Decile']
+quote_deciles5['Order Imbalance'] = quote_imbalance['order_imbalance5'][:-60]
+quote_deciles5['Price Difference'] = list(quote_imbalance['mid_price'].diff(periods=60).dropna())
+quote_deciles5['Price Changes Deciles'] = pd.qcut(quote_deciles2['Price Difference'], 10,labels = False)
+
+
+quote_means5 = quote_deciles5.groupby('Decile').mean()
+
+
+quo1 = plt.scatter(quote_means1['Order Imbalance'], quote_means1['Price Difference'])
+quo2 = plt.scatter(quote_means2['Order Imbalance'], quote_means2['Price Difference'])
+quo3 = plt.scatter(quote_means3['Order Imbalance'], quote_means3['Price Difference'])
+quo4 = plt.scatter(quote_means4['Order Imbalance'], quote_means4['Price Difference'])
+quo5 = plt.scatter(quote_means5['Order Imbalance'], quote_means5['Price Difference'])
+plt.legend((quo1, quo2, quo3, quo4, quo5),('Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5'))
+plt.title('60 Sec Change in Mid price vs Different Levels of Quote Imbalance')
+plt.xlabel('Signal')
+plt.ylabel('60 Sec Change in Mid Price')
+plt.show()
+
